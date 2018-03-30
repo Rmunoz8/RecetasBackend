@@ -4,6 +4,7 @@ let mongoose = require('mongoose'); //Cargamos módulo de mongoose
 let app = require('./app'); //Cargamos la configuración de express
 let port = 3800;
 
+
 // Conexión DB
 mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://localhost:27017/recetadb')

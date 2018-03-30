@@ -7,7 +7,8 @@ let recetaSchema = Schema({
     nombre: String,
     usuario: String,
     pasos: String,
-    img: String
+    img: String,
+    dificultad: String,
 });
 
 module.exports = mongoose.model('Receta', recetaSchema);
