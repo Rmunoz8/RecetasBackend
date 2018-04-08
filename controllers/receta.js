@@ -2,19 +2,6 @@
 
 let Receta = require('../models/receta');
 
-function home(req, res){
-    res.status(200).send({
-        message: "Hola mundo"
-    });
-};
-
-
-function pruebas(req, res){
-    res.status(200).send({
-        message: "Prueba en el servidor"
-    });
-};
-
 function saveReceta(req, res){
     let params = req.body;
     let receta = new Receta();
@@ -70,8 +57,6 @@ function dameRecetaById(req, res){
 }
 
 module.exports = {
-    home,
-    pruebas,
     saveReceta,
     dameRecetas,
     dameRecetaById
