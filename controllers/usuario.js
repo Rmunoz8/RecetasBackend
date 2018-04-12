@@ -3,6 +3,8 @@
 let bcrypt = require('bcrypt-nodejs');
 let mongoosePaginate = require('mongoose-pagination');
 let jwt = require('../services/jwt');
+let fs = require('fs');
+let path = require('path');
 
 let Usuario = require('../models/usuario');
 
@@ -144,10 +146,64 @@ function updateUser(req, res){
 
 
 }
+// Subir archivos de imagen/avatar de usuario
+function uploadImage(req, res) {
+    let userId = req.params.id;
+
+    if (req.files) {
+        let file_path = req.files.image.path;
+        let file_split = file_path.split('\\');
+        let file_name = file_split[2];
+        let ext_split = file_name.split('\.');
+        let file_ext = ext_split[1];
+
+        if (userId != req.user.sub) {
+            return removeFilesOfUploads(res, file_path, `No tiene permisos`);
+        }
+
+        if (file_ext == `png` || file_ext == `jpg` || file_ext == `jpeg` || file_ext == `gif`) {
+            // Actualizar documento de usuario logeado
+            Usuario.findByIdAndUpdate(userId, { image: file_name }, { new: true }, (err, userUpdate) => {
+                if (err) return res.status(500).send({ message: `Error en la petición` });
+                if (!userUpdate) return res.status(404).send({ message: `No se ha podido actualizadar el usuario` });
+
+                return res.status(200).send({ usuario: userUpdate });
+            });
+        } else {
+            return removeFilesOfUploads(res, file_path, `La extensión no es válida`);
+        }
+
+    } else {
+        return res.status(200).send({ message: `No se han subido archivos` });
+    }
+}
+// Mostrar Imagen
+function getImageFile(req, res) {
+    let image_file = req.params.imageFile;
+    let path_file = `./uploads/users/${image_file}`
+
+    fs.exists(path_file, (exists) => {
+        if (exists) {
+            res.sendFile(path.resolve(path_file));
+        } else {
+            res.status(200).send({ message: `No existe la imagen` });
+        }
+    });
+
+}
+// No guardar imagen en caso de error
+function removeFilesOfUploads(res, file_path, message) {
+    fs.unlink(file_path, (err) => {
+        return res.status(200).send({ message: message });
+    });
+}
+
 module.exports = {
     saveUsuario,
     loginUsuraio,
     getUser,
     getUsers,
-    updateUser
+    updateUser,
+    uploadImage,
+    getImageFile
 }
