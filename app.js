@@ -9,6 +9,7 @@ let app = express();
 // Cargar rutas
 let receta_routes = require('./routes/receta');
 let usuario_routes = require(`./routes/usuario`);
+let follow_routes = require('./routes/follow');
 
 // Middlewares ->  Metodo que se ejecuta antes de llegar a un controlador
 app.use(bodyParser.urlencoded({extended:false}));
@@ -24,6 +25,7 @@ app.use(function (req, res, next) {
 // Rutas
 app.use('/api', receta_routes);
 app.use(`/api`, usuario_routes);
+app.use('/api', follow_routes);
 
 // Exportar
 
