@@ -8,6 +8,16 @@ let path = require('path');
 
 let Usuario = require('../models/usuario');
 
+// Devuelve TODOS los usuarios
+function getAllUsers(req, res){
+    Usuario.find((err, usuario)=>{
+        if(err){
+            return res.status(500).send(err);
+        }else{
+            return res.status(200).send(usuario);
+        }
+    });
+}
 // Registro de usuario
 function saveUsuario(req, res){
     let params = req.body;
@@ -205,5 +215,6 @@ module.exports = {
     getUsers,
     updateUser,
     uploadImage,
-    getImageFile
+    getImageFile,
+    getAllUsers
 }
