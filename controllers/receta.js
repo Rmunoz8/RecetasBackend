@@ -4,6 +4,8 @@ let Receta = require('../models/receta');
 
 function saveReceta(req, res){
     let params = req.body;
+    console.log(`PARAMS -> ${params} `);
+    
     let receta = new Receta();
 
     if(params.dificultad && params.img && params.nombre && params.pasos && params.usuario ){

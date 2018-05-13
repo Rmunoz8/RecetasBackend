@@ -69,33 +69,39 @@ function saveUsuario(req, res){
 }
 // Login de usuarios
 function loginUsuraio(req, res){
-    let params = req.body;
-     
+    
+    let params = req.body;             
     let email = params.email;
     let password = params.password;
+
+    console.log(`Email -> ${email}
+Password -> ${password}`);
+    
 
     Usuario.findOne({email:email}, (err, usuario)=>{
         if(err) return res.status(500).send({message: "Error en la petición"});
 
-        if(usuario){
+        if(usuario){            
             bcrypt.compare(password, usuario.password, (err, check)=>{
-                if(check){
-
+                if(check){                    
                     if(params.gettoken){
                         // Generar y Devolver token
                         return res.status(200).send({
-                            token: jwt.createToken(usuario) //Genera un token con los datos del usuario 
+                            token: jwt.createToken({usuario}) //Genera un token con los datos del usuario 
                         });
                     }else{
+                        console.log(`3 -> ${usuario} `);
+                        
                         // Devolver datos del usuario
-                        return res.status(200).send({ usuario });
+                        return res.status(200).send({ usuario,
+                        message: "Correcto" });
                     }
                 }else{
-                    return res.status(404).send({message: "El usuario no se ha podido identificar"});
+                    return res.send({message: "El usuario no se ha podido identificar"});
                 }
             });
         }else{
-            return res.status(404).send({message: "No se identificó al usuario"});
+            return res.send({message: "No se identificó al usuario"});
         }
 
     });
