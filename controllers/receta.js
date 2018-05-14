@@ -45,6 +45,12 @@ function dameRecetas(req, res){
 
 }
 
+function getRecetasFollows(req, res){
+
+    let user  = req.user;
+
+}
+
 function dameRecetaById(req, res){
 
     let recetaId = req.params.id;
