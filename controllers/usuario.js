@@ -23,6 +23,9 @@ function saveUsuario(req, res){
     let params = req.body;
     let usuario = new Usuario();
 
+    console.log(req.body);
+    
+
     if(params.nombre && params.apellido && params.nick && params.email && params.password){
         usuario.nombre = params.nombre;
         usuario.apellido = params.apellido;

@@ -106,7 +106,6 @@ function getMyFollows(req, res){
         if (err) return res.status(500).send({ message: `Error al listar los usuarios` });
 
         if (!follows) return res.status(404).send({ message: `Actualmente no sigues a nadie` });
-
         return res.status(200).send({ follows });
     });
 }
