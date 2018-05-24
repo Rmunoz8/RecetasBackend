@@ -98,9 +98,8 @@ function getFollowedusers(req, res) {//NO FUNCIONA DEL TODO BIEN REVISAR
 }
 // Muestra TODOS los usuarios que sigues (Sin paginar)
 function getMyFollows(req, res){    
-    console.log(`ENTRAS????`);
     
-    let userId = req.user.sub;
+    let userId = req.params.id;
 
     Follow.find({usuario:userId}).populate('usuario followed').exec((err, follows)=>{
         if (err) return res.status(500).send({ message: `Error al listar los usuarios` });

@@ -113,6 +113,7 @@ Password -> ${password}`);
 // Conseguir datos de un usuario
 function getUser(req, res){
     let usuarioId = req.params.id;
+    console.log(`UserID -> ${usuarioId} `);
     
     Usuario.findById(usuarioId, (err, usuario)=>{
         if (err) return res.status(500).send({ message: `Error en la petición` });
