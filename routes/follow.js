@@ -5,7 +5,7 @@ let FollowController = require('../controllers/follow');
 let api = express.Router();
 let md_auth = require('../middlewares/authenticated');
 
-api.post('/follow', md_auth.ensureAuth, FollowController.saveFollow);
+api.post('/follow', FollowController.saveFollow);
 api.delete('/follow/:id', md_auth.ensureAuth, FollowController.deleteFollow);
 api.get('/following/:id?/:page?', md_auth.ensureAuth, FollowController.getFollowingusers);
 api.get('/followed/:id?/:page?', md_auth.ensureAuth, FollowController.getFollowedusers);

@@ -9,8 +9,9 @@ let Follow = require('../models/follow');
 function saveFollow(req, res){
     let params = req.body;
     let follow = new Follow();
-
-    follow.usuario = req.user.sub;
+    console.log(`PARAMS -> ${JSON.stringify(params)} `);
+    
+    follow.usuario = params.usuario;
     follow.followed = params.followed;
 
     follow.save((err, followStored)=>{
