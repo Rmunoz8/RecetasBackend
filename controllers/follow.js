@@ -22,18 +22,41 @@ function saveFollow(req, res){
         return res.status(200).send({follow: followStored});
     });
 }
-// Dejar de seguir a usuario
-function deleteFollow(req, res){
-    let userId = req.user.sub;
-    let followId = req.params.id;
 
-    Follow.find({'usuario':userId, "followed":followId}).remove(err=>{
-        if (err) return res.status(500).send({ message: `Error al dejar de seguir` });
+function esSeguido(req, res){
+    let params = req.body;
+    let userId = params.usuario;
+    let follow = params.followed;
 
-        return res.status(200).send({ message: `Has dejado de seguir al usuario` });
+    console.log(`usuario -> ${userId}
+followed -> ${follow} `);
+    
+
+    Follow.findOne({'usuario':userId}, (err, followStored)=>{
+        if(err) return res.status(500).send({message:"No se sigue al usuario", estado:false});
+
+        return res.status(200).send({follow: followStored, estado: true});
 
     });
 
+}
+
+// Dejar de seguir a usuario
+function deleteFollow(req, res){
+
+    let params = req.body;
+    let userId = params.usuario;
+    let followId = params.followed;
+
+    console.log(`Usuario -> ${userId}
+Followed -> ${followId} `);
+    
+
+    Follow.findOneAndRemove({ 'usuario': userId, "followed":followId}, (err)=>{
+        if (err) return res.status(200).send({ message: `Error al dejar de seguir` });
+
+        return res.status(200).send({ message: `Has dejado de seguir al usuario` });
+    });
 }
 // Muestra listado de usuarios seguidos, si no llega ninguna ID por ls url, se muestran los del mismo usuario
 function getFollowingusers(req, res){//NO FUNCIONA DEL TODO BIEN REVISAR
@@ -129,6 +152,6 @@ module.exports = {
     getFollowingusers,
     getFollowedusers,
     getMyFollows,
-    getYourFollows
-
+    getYourFollows,
+    esSeguido
 }
