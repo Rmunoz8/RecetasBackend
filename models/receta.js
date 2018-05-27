@@ -5,7 +5,11 @@ let Schema = mongoose.Schema;
 
 let recetaSchema = Schema({
     nombre: String,
-    usuario: String,
+    usuario: {
+        type: Schema.ObjectId,
+        ref: 'Usuario'
+    },
+    nick:String,
     pasos: String,
     img: String,
     dificultad: String,

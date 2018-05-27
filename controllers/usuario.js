@@ -169,17 +169,13 @@ function updateUser(req, res){
 // Subir archivos de imagen/avatar de usuario
 function uploadImage(req, res) {
     let userId = req.params.id;
-
+    
     if (req.files) {
         let file_path = req.files.image.path;
         let file_split = file_path.split('\\');
         let file_name = file_split[2];
         let ext_split = file_name.split('\.');
         let file_ext = ext_split[1];
-
-        if (userId != req.user.sub) {
-            return removeFilesOfUploads(res, file_path, `No tiene permisos`);
-        }
 
         if (file_ext == `png` || file_ext == `jpg` || file_ext == `jpeg` || file_ext == `gif`) {
             // Actualizar documento de usuario logeado
