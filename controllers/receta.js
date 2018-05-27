@@ -66,9 +66,10 @@ function recetasUserId(req, res){
     Receta.find({'usuario':userId}, (err, recetas)=>{
         if(err) return res.status(500).send({message:"Error al buscar recetas", estado:'error'})
 
-        if(!recetas) return res.status(200).send({message:'No se sigue a ningún usuario', estado:'nulo'})
+        if(!recetas) return res.status(200).send({message:'Este usuario no tiene recetas', estado:'nulo'})
 
         return res.status(200).send({
+            recetas,
             message: 'Recetas encontradas del usuario',
             estado: 'correcto'
         })

@@ -32,7 +32,7 @@ function saveUsuario(req, res){
         usuario.nick = params.nick;
         usuario.email = params.email;
         usuario.rol = 'ROL';
-        usuario.image = null;
+        usuario.image = 'baker.png';
 
         // Controlar usuarios duplicados
         Usuario.find({$or:[
@@ -147,23 +147,30 @@ function getUsers(req, res){
 
 }
 // Edicion de datos usuario
-function updateUser(req, res){
+function updateUser(req, res) {
+    console.log(`LLEGAS A UPDATE?`);
+
     let userId = req.params.id;
     let update = req.body;
 
-    delete update.password;
+    bcrypt.hash(update.password, null, null, (err, hash) => {
+        update.password = hash;
 
-    if(userId != req.user.sub){
-        return res.status(500).send({ message: `No tienes permiso para actualizar los datos del usuario` });
-    }
+        Usuario.findByIdAndUpdate(userId, update, {
+            new: true
+        }, (err, userUpdate) => {
+            if (err) return res.status(500).send({
+                message: `Error en la petición`
+            });
+            if (!userUpdate) return res.status(404).send({
+                message: `No se ha podido actualizadar el usuario`
+            });
 
-    Usuario.findByIdAndUpdate(userId, update, {new:true}, (err, userUpdate)=>{
-        if (err) return res.status(500).send({ message: `Error en la petición` });
-        if (!userUpdate) return res.status(404).send({ message: `No se ha podido actualizadar el usuario` });
-
-        return res.status(200).send({ usuario: userUpdate });
+            return res.status(200).send({
+                usuario: userUpdate
+            });
+        });
     });
-
 
 }
 // Subir archivos de imagen/avatar de usuario
