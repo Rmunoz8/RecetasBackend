@@ -6,60 +6,82 @@ let Usuario = require('../models/usuario');
 let Follow = require('../models/follow');
 
 // Seguir usuario
-function saveFollow(req, res){
+function saveFollow(req, res) {
     let params = req.body;
     let follow = new Follow();
     console.log(`PARAMS -> ${JSON.stringify(params)} `);
-    
+
     follow.usuario = params.usuario;
     follow.followed = params.followed;
 
-    follow.save((err, followStored)=>{
-        if(err) return res.status(500).send({message:`Error al guardar el siguimento`});
+    follow.save((err, followStored) => {
+        if (err) return res.status(500).send({
+            message: `Error al guardar el siguimento`
+        });
 
-        if(!followStored) return res.status(404).send({message: `El seguimiento no se ha guardado`});
+        if (!followStored) return res.status(404).send({
+            message: `El seguimiento no se ha guardado`
+        });
 
-        return res.status(200).send({follow: followStored});
+        return res.status(200).send({
+            follow: followStored
+        });
     });
 }
 
-function esSeguido(req, res){
+function esSeguido(req, res) {
     let params = req.body;
     let userId = params.usuario;
-    let follow = params.followed;
+    let followed = params.followed;
 
-    console.log(`usuario -> ${userId}
-followed -> ${follow} `);
-    
+    Follow.findOne({
+        'usuario': userId,
+        'followed': followed
+    }, (err, followStored) => {
 
-    Follow.findOne({'usuario':userId}, (err, followStored)=>{
-        if(err) return res.status(500).send({message:"No se sigue al usuario", estado:false});
+        if (!followStored) {
+            console.log(`No los sigues`);
 
-        return res.status(200).send({follow: followStored, estado: true});
+            return res.status(200).send({
+                message: `Error al dejar de seguir`,
+                estado: false
+            });
+        } else {
+            console.log(`Los sigues`);
+
+            return res.status(200).send({
+                estado: true
+            });
+
+        }
 
     });
 
 }
 
 // Dejar de seguir a usuario
-function deleteFollow(req, res){
-
+function deleteFollow(req, res) {
     let params = req.body;
     let userId = params.usuario;
-    let followId = params.followed;
+    let followed = params.followed;
 
-    console.log(`Usuario -> ${userId}
-Followed -> ${followId} `);
-    
+    Follow.find({
+        'usuario': userId,
+        "followed": followed
+    }).remove(err => {
+        if (err) return res.status(500).send({
+            message: `Error al dejar de seguir`
+        });
 
-    Follow.findOneAndRemove({ 'usuario': userId, "followed":followId}, (err)=>{
-        if (err) return res.status(200).send({ message: `Error al dejar de seguir` });
+        return res.status(200).send({
+            message: `Has dejado de seguir al usuario`
+        });
 
-        return res.status(200).send({ message: `Has dejado de seguir al usuario` });
     });
+
 }
 // Muestra listado de usuarios seguidos, si no llega ninguna ID por ls url, se muestran los del mismo usuario
-function getFollowingusers(req, res){//NO FUNCIONA DEL TODO BIEN REVISAR
+function getFollowingusers(req, res) { //NO FUNCIONA DEL TODO BIEN REVISAR
     let userId = req.user.sub;
 
     if (req.params.id && req.params.page) {
@@ -76,10 +98,18 @@ function getFollowingusers(req, res){//NO FUNCIONA DEL TODO BIEN REVISAR
 
     let itemsPerPage = 2;
 
-    Follow.find({ usuario: userId }).populate({ path: 'followed' }).paginate(page, itemsPerPage, (err, follows, total) => {
-        if (err) return res.status(500).send({ message: `Error al listar los usuarios` });
+    Follow.find({
+        usuario: userId
+    }).populate({
+        path: 'followed'
+    }).paginate(page, itemsPerPage, (err, follows, total) => {
+        if (err) return res.status(500).send({
+            message: `Error al listar los usuarios`
+        });
 
-        if (!follows) return res.status(404).send({ message: `Actualmente no sigues a nadie` });
+        if (!follows) return res.status(404).send({
+            message: `Actualmente no sigues a nadie`
+        });
 
         return res.status(200).send({
             total: total,
@@ -90,7 +120,7 @@ function getFollowingusers(req, res){//NO FUNCIONA DEL TODO BIEN REVISAR
     })
 }
 // Muestra los usuarios que nos siguen
-function getFollowedusers(req, res) {//NO FUNCIONA DEL TODO BIEN REVISAR
+function getFollowedusers(req, res) { //NO FUNCIONA DEL TODO BIEN REVISAR
     let userId = req.user.sub;
 
     if (req.params.id && req.params.page) {
@@ -107,10 +137,16 @@ function getFollowedusers(req, res) {//NO FUNCIONA DEL TODO BIEN REVISAR
 
     let itemsPerPage = 2;
 
-    Follow.find({ followed: userId }).populate('usuario followed').paginate(page, itemsPerPage, (err, follows, total) => {
-        if (err) return res.status(500).send({ message: `Error al listar los usuarios` });
+    Follow.find({
+        followed: userId
+    }).populate('usuario followed').paginate(page, itemsPerPage, (err, follows, total) => {
+        if (err) return res.status(500).send({
+            message: `Error al listar los usuarios`
+        });
 
-        if (!follows) return res.status(404).send({ message: `Actualmente no te sigue nadie` });
+        if (!follows) return res.status(404).send({
+            message: `Actualmente no te sigue nadie`
+        });
 
         return res.status(200).send({
             total: total,
@@ -121,27 +157,54 @@ function getFollowedusers(req, res) {//NO FUNCIONA DEL TODO BIEN REVISAR
     })
 }
 // Muestra TODOS los usuarios que sigues (Sin paginar)
-function getMyFollows(req, res){    
-    
+function getMyFollows(req, res) {
+
     let userId = req.params.id;
 
-    Follow.find({usuario:userId}).populate('usuario followed').exec((err, follows)=>{
-        if (err) return res.status(500).send({ message: `Error al listar los usuarios` });
+    Follow.find({
+        usuario: userId
+    }).populate('usuario followed').exec((err, follows) => {
+        if (err) {
+            console.log(`ERROR -> ${err} `);
 
-        if (!follows) return res.status(404).send({ message: `Actualmente no sigues a nadie` });
-        return res.status(200).send({ follows });
+            return res.status(500).send({
+                message: `Error al listar los usuarios`
+            });
+        }
+
+        if (!follows) {
+            console.log(`No sigues a nadie`);
+
+            return res.status(404).send({
+                message: `Actualmente no sigues a nadie`
+            });
+        }
+
+        console.log(`Sigues a ${follows} `);
+
+        return res.status(200).send({
+            follows
+        });
     });
 }
 // Muestra TODOS los usuarios que te siguen (Sin paginar)
-function getYourFollows(req, res){
+function getYourFollows(req, res) {
     let userId = req.user.sub;
 
-    Follow.find({followed:userId}).populate('usuario followed').exec((err, follows)=>{
-        if (err) return res.status(500).send({ message: `Error al listar los usuarios` });
+    Follow.find({
+        followed: userId
+    }).populate('usuario followed').exec((err, follows) => {
+        if (err) return res.status(500).send({
+            message: `Error al listar los usuarios`
+        });
 
-        if (!follows) return res.status(404).send({ message: `Actualmente no te sigue nadie` });
+        if (!follows) return res.status(404).send({
+            message: `Actualmente no te sigue nadie`
+        });
 
-        return res.status(200).send({ follows });
+        return res.status(200).send({
+            follows
+        });
     });
 
 }

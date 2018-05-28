@@ -10,13 +10,13 @@ let multipart = require('connect-multiparty');
 let md_upload = multipart({uploadDir: './uploads/users'})
 
 api.get(`/user/:id`, UsuarioController.getUser);
-api.put(`/user/:id`, md_auth.ensureAuth, UsuarioController.updateUser);
+api.post(`/userUpdate/:id`, UsuarioController.updateUser);
 api.post(`/user`, UsuarioController.saveUsuario);
 
 api.post(`/login`, UsuarioController.loginUsuraio);
 api.get(`/users/:page?`, md_auth.ensureAuth, UsuarioController.getUsers);
-api.put('/userImage/:id', [md_auth.ensureAuth, md_upload], UsuarioController.uploadImage);
-api.get('/userImage/:imageFile', UsuarioController.getImageFile);
+api.post('/userImage/:id', md_upload, UsuarioController.uploadImage);
+api.get('/userImageFile/:imageFile', UsuarioController.getImageFile);
 api.get('/allUsers', UsuarioController.getAllUsers);
 
 module.exports = api;
