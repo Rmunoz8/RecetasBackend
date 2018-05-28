@@ -189,7 +189,7 @@ function getMyFollows(req, res) {
 }
 // Muestra TODOS los usuarios que te siguen (Sin paginar)
 function getYourFollows(req, res) {
-    let userId = req.user.sub;
+    let userId = req.params.id;
 
     Follow.find({
         followed: userId
