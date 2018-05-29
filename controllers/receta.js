@@ -91,7 +91,26 @@ function dameRecetaById(req, res){
 
 }
 
+function uploadImgReceta(req, res){
+
+    if(req.files){
+        let file_path = req.files.image.path;
+        let file_split = file_path.split('\\');
+        let file_name = file_split[2];
+        let ext_split = file_name.split('\.');
+        let file_ext = ext_split[1];
+
+        return res.status(200).send({ "link": `http://localhost:3800/api/recetaImageFile/${file_name}` })
+    }else{
+        return res.status(200).send({
+            message: `No se han subido archivos`
+        });
+    }
+
+}
+
 function uploadImage(req, res) {
+    
     let recetaId = req.params.id;
 
     if (req.files) {
@@ -109,7 +128,9 @@ function uploadImage(req, res) {
                 new: true
             }, (err, recetaUpdate) => {
                 if (err) return res.status(500).send({
-                    message: `Error en la petición`
+                    message: `Error en la petición`,
+                    error: err,
+                    imagen
                 });
                 if (!recetaUpdate) return res.status(404).send({
                     message: `No se ha podido actualizadar la receta`
@@ -152,5 +173,6 @@ module.exports = {
     dameRecetaById,
     recetasUserId,
     uploadImage,
-    getImageFile
+    getImageFile,
+    uploadImgReceta
 }
