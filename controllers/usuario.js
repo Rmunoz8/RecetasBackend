@@ -110,6 +110,7 @@ Password -> ${password}`);
     });
 
 }
+
 // Conseguir datos de un usuario
 function getUser(req, res){
     let usuarioId = req.params.id;
@@ -122,8 +123,8 @@ function getUser(req, res){
 
         return res.status(200).send({ usuario });
     });
-
 }
+
 // Devolver listado de usuarios paginados
 function getUsers(req, res){
     let page = 1;
